@@ -43,10 +43,47 @@ x) Accéder à l'interface graphique de zabbix :
     - Pour l'interface web de Zabbix : http://votre_ipv4:80. Le Username par défaut est **Admin** et le password **zabbix**. Il est important de changer ces informations quand nous voudrions passer en production. 
     
 
+### III- MISE EN PLACE DE L'AGENT
+#### A) Déploiement de l'agent sur Linux
+Pour déployer notre agent sur un hôte Linux à surveiller, il faut :
+1) Creer un dossier de l'agent et copier le docker compose file
+```powershell
+# création du dossier de l'agent
+mkdir -p /opt/agent
 
+# Entrons dans le dossier de l'agent
+cd /opt/agent-zabbix
+
+# création du docker compose file de l'agent
+nano compose.yml 
+
+# Une fois le fichier ouvert avec nano, nous allons copier et coller le contenu de ./compose-agent-linux.yml dans ce fichier compose.yml. Nous allons donc sauvegarder.
+
+- sudo -s
+```
+
+2) Démarrage de l'agent zabbix
+```powershell
+# Passer en mode superutilisateur
+- sudo -s
+
+# Installation et démarrage de l'agent en étant toujours dans /opt/agent-zabbix
+- docker compose  up -d
+
+# Vérifier que le conteneur a bien démarré
+- docker container ls 
+
+# Pour recréer notre conteneurs 
+docker compose  up -d --force-recreate
+```
+#### B) Déploiement de l'agent sur Windows
 
 
     
 **NB :** Il faudra exécuter les commandes ci-dessus dans le terminal en étant à la racine du projet. 
 
+```powershell
+#cd /opt/zabbix
 
+# sudo chmod 600 .env
+```
