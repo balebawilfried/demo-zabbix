@@ -35,7 +35,7 @@ Pour mettre en marche nos outils :
 - docker container ls 
 
 # Pour recreer nos conteneurs si vous vous êtes trompés dans l'ordre d'exécution
-docker compose up -d --force-recreate
+docker compose -f compose-zabbix-server.yml up -d --force-recreate
 ```
 
 
