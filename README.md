@@ -39,7 +39,7 @@ docker compose -f compose-zabbix-server.yml up -d --force-recreate
 ```
 
 
-6) Accéder à l'interface graphique de zabbix :
+x) Accéder à l'interface graphique de zabbix :
     - Pour l'interface web de Zabbix : http://votre_ipv4:80. Le Username par défaut est **Admin** et le password **zabbix**. Il est important de changer ces informations quand nous voudrions passer en production. 
     
 
@@ -47,15 +47,6 @@ docker compose -f compose-zabbix-server.yml up -d --force-recreate
 
 
     
-**NB :** Il faudra exécuter les commandes ci-dessus dans le terminal en étant à la racine du projet. D'autres part, il important de modifier les informations de configuration du serveur SMTP présentes ici (**./alertmanager/*.yml**) avec les vôtres sinon vous n'allez pas reçevoir les notification de alertmanager.
-
-### IV- CONFIGURATION DE GRAFANA
-Afin de pouvoir ajouter/créer les dashboards, il est important d'ajouter les **sources de données** de prometheus et loki avant de créer les dashboard qui seront connectés à ces dernières. Au moment de l'ajout de la source de données, étant donné que ces éléments appartiennent au même réseau docker. Il faudra respectivement pour urls de connexion choisir **http://prometheus:9090** pour la source de données prometheus et **http://loki:3100**  pour la source de données loki. 
+**NB :** Il faudra exécuter les commandes ci-dessus dans le terminal en étant à la racine du projet. 
 
 
-
-
-
-**NB :** A chaque modification d'un fichier .yml, nous avons besoin de faire un **docker compose up -d**. 
-
-**Si vous souhaitez utiliser ce travail pour déployer plus tard en production, il est important de clairement définir la version de nos outils dans le fichier de variable d'environnement du projet .env**
