@@ -35,16 +35,90 @@ Pour mettre en marche nos outils :
 - docker container ls 
 
 # Pour recreer nos conteneurs si vous vous êtes trompés dans l'ordre d'exécution
-docker compose -f compose-zabbix-server.yml up -d --force-recreate
+- docker compose -f compose-zabbix-server.yml up -d --force-recreate
+```
+
+3) Installation Zabbix Agent 2 nativement sur notre serveur Zabbix (Ubuntu Server) 
+```powershell
+# Téléchargement de tous les composants de Zabbix (server, frontend, agent)
+- wget https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu24.04_all.deb
+
+# Depackatage du dépôt 
+- sudo dpkg -i zabbix-release_latest_7.0+ubuntu24.04_all.deb
+
+# Mise à jour du dépôt 
+- sudo apt update
+
+# Installation uniquement de l'agent 2
+- sudo apt install zabbix-agent2 -y
+```
+4) Configuration de l'agent  
+```powershell
+# Editons le fichier de configuration de l'interface
+- sudo nano /etc/zabbix/zabbix_agent2.conf
+
+# Nous allons modifier ce fichier en fonction du mode que nous voulons pour notre agent (passif ou actif) :
+```
+
+**Pour le mode passif nous allons modifier les lignes suivantes dans le fichier :**
+```powershell
+- Server=IP_server_zabbix
+- ServerActive=127.0.0.1
+- Hostname=Zabbix server
+
+- # Timeout
+- Timeout=10
+- # Niveau de journalisation
+- DebugLevel=3
+
+- # Port d'écoute local uniquement
+- ListenIP=127.0.0.1
+- ListenPort=10050
+```
+Si nous voulons configurer notre agent en mode actif, nous allons configurer *ServerActive=IP_server_zabbix* et allons commenter *Server=IP_server_zabbix*, nous avons donc :
+**Pour le mode actif nous allons modifier les lignes suivantes dans le fichier :**
+```powershell
+- # Server=IP_server_zabbix
+- ServerActive=IP_server_zabbix
+- Hostname=Zabbix server
+```
+
+```powershell
+
+
+
+"
+# Identité de l'hôte
+Hostname=ubuntu-zabbix-server
+
+# Configuration du mode passif
+Server=
+
+# Mode actif
+# ServerActive=IP_server_zabbix
+
+
+
+
+
+
+"
+
+#
+- sudo systemctl enable zabbix-agent2
+
+- sudo systemctl restart zabbix-agent2
+
+- sudo systemctl status zabbix-agent2
 ```
 
 
-x) Accéder à l'interface graphique de zabbix :
+5) Accéder à l'interface graphique de zabbix :
     - Pour l'interface web de Zabbix : http://votre_ipv4:80. Le Username par défaut est **Admin** et le password **zabbix**. Il est important de changer ces informations quand nous voudrions passer en production. 
     
 
 ### III- MISE EN PLACE DE L'AGENT
-#### A) Déploiement de l'agent sur Linux
+#### A) Déploiement de l'agent sur un hôte Linux
 Pour déployer notre agent sur un hôte Linux à surveiller, il faut :
 1) Creer un dossier de l'agent et copier le docker compose file
 ```powershell
@@ -63,6 +137,21 @@ nano compose.yml
 ```
 
 2) Démarrage de l'agent zabbix
+```powershell
+# Passer en mode superutilisateur
+- sudo -s
+
+# Installation et démarrage de l'agent en étant toujours dans /opt/agent-zabbix
+- docker compose  up -d
+
+# Vérifier que le conteneur a bien démarré
+- docker container ls 
+
+# Pour recréer notre conteneurs 
+docker compose  up -d --force-recreate
+```
+
+3) Modifier le fichier de configuration de l'agent
 ```powershell
 # Passer en mode superutilisateur
 - sudo -s

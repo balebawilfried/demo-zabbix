@@ -35,6 +35,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "10051:10051"
+    #expose:
+      #- 10051
     depends_on:
       mysql-server:
         condition: service_healthy
@@ -42,8 +44,7 @@ services:
       - zabbix_server_data:/var/lib/zabbix
     networks:
       - zabbix-network
-    #expose:
-      #- 10051
+    
 
   zabbix-web:
     image: zabbix/zabbix-web-nginx-mysql:alpine-7.0-latest
@@ -58,13 +59,54 @@ services:
       PHP_TZ: ${PHP_TZ}
     ports:
       - "${ZABBIX_WEB_PORT}:8080"
+    #expose:
+      #- 8080
     depends_on:
       - zabbix-server
       - mysql-server
     networks:
       - zabbix-network
-    #expose:
-      #- 8080
+    
+
+  zabbix-agent:
+    image: zabbix/zabbix-agent:alpine-7.0-latest
+    container_name: zabbix-agent-server
+    hostname: agent-zabbix-server
+    restart: unless-stopped
+    init: true
+
+    environment:
+      # Nom de l'hôte déclaré dans Zabbix
+      ZBX_HOSTNAME: "agent-zabbix-server"
+
+      # Serveur Zabbix
+      ZBX_SERVER_HOST: "192.168.152.130"
+
+      # Autoriser les connexions passives
+      ZBX_PASSIVE_ALLOW: "true"
+      ZBX_PASSIVESERVERS: "192.168.152.130"
+
+      # Ecoute
+      ZBX_LISTENIP: "0.0.0.0"
+      ZBX_LISTENPORT: "10050"
+
+      ZBX_TIMEOUT: "10"
+      ZBX_DEBUGLEVEL: "3"
+
+    ports:
+      - 10050:10050
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /dev:/host/dev:ro
+
+    depends_on:
+      - zabbix-server
+
+    networks:
+      - zabbix-network
 
 volumes:
   mysql_data:

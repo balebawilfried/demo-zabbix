@@ -1,0 +1,79 @@
+
+services:
+  zabbix-agent:
+    image: zabbix/zabbix-agent:alpine-7.0-latest
+    container_name: zabbix-agent
+    hostname: linux-server-01
+    restart: unless-stopped
+    init: true
+
+    environment:
+      # ==========================================
+      # IDENTITE DE L'AGENT
+      # ==========================================
+
+      ZBX_HOSTNAME: "linux-server-01"
+
+      # ==========================================
+      # CONFIGURATION DU SERVEUR ZABBIX
+      # ==========================================
+
+      # Adresse du serveur Zabbix
+      ZBX_SERVER_HOST: "192.168.152.130"
+
+      # ==========================================
+      # MODE PASSIF
+      # Le serveur interroge l'agent
+      # ==========================================
+
+      # Autoriser uniquement le serveur Zabbix
+      # a interroger l'agent
+      ZBX_PASSIVESERVERS: "192.168.152.130"
+
+      # Ecoute sur toutes les interfaces du conteneur
+      ZBX_LISTENIP: "0.0.0.0"
+      ZBX_LISTENPORT: "10050"
+
+      # ==========================================
+      # MODE ACTIF
+      # L'agent contacte le serveur Zabbix
+      # ==========================================
+
+      # DECOMMENTER POUR ACTIVER LE MODE ACTIF
+      # ZBX_ACTIVE_ALLOW: "true"
+
+      # DECOMMENTER POUR ACTIVER LE MODE ACTIF
+      # ZBX_ACTIVE_SERVERS: "192.168.152.131:10051"
+
+      # ==========================================
+      # PARAMETRES GENERAUX
+      # ==========================================
+
+      ZBX_TIMEOUT: "10"
+      ZBX_DEBUGLEVEL: "3"
+
+    # ==========================================
+    # RESEAU
+    # ==========================================
+
+    # MODE PASSIF :
+    # Exposer le port 10050 pour les requetes du serveur
+    ports:
+      - 10050:10050
+
+    # MODE ACTIF UNIQUEMENT :
+    # Tu peux supprimer/commenter le bloc ports ci-dessus
+    # si tu n'utilises que le mode actif.
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /dev:/host/dev:ro
+
+    networks:
+      - zabbix-agent-network
+
+networks:
+  zabbix-agent-network:
+    driver: bridge
